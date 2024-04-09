@@ -32,24 +32,22 @@ class ArSensorManager {
   double _heading = 0.0;
   double _compassAccuracy = 0.0;
 
-  late StreamController<ArSensor> _arSensorController;
+  final StreamController<ArSensor> _arSensor = StreamController();
 
   List<double> pitchHistory = [];
-  Duration sensorInterval = SensorInterval.normalInterval;
 
   void init() {
-    _arSensorController = StreamController();
     _checkLocationPermission();
   }
 
   void _initialisation() {
     _accelerationStream =
-        accelerometerEventStream(samplingPeriod: sensorInterval).listen((AccelerometerEvent event) {
+        accelerometerEvents.listen((AccelerometerEvent event) {
       _accelerometer = Vector3(event.x, event.y, event.z);
       _calculateSensor();
     });
     _userAccelerationStream =
-        userAccelerometerEventStream(samplingPeriod: sensorInterval).listen((UserAccelerometerEvent event) {
+        userAccelerometerEvents.listen((UserAccelerometerEvent event) {
       _userAccelerometer = Vector3(event.x, event.y, event.z);
       _calculateSensor();
     });
@@ -95,15 +93,15 @@ class ArSensorManager {
 
     final arSensor = ArSensor(
       heading: _heading,
-      pitch: _filterExponential(pitchHistory, alpha),
+      pitch: _filterExponantial(pitchHistory, alpha),
       location: _position,
       orientation: _orientation,
       compassAccuracy: _compassAccuracy,
     );
-    _arSensorController.add(arSensor);
+    _arSensor.add(arSensor);
   }
 
-  Stream<ArSensor> get arSensor => _arSensorController.stream;
+  Stream<ArSensor> get arSensor => _arSensor.stream;
 
   Future<void> _checkLocationPermission() async {
     bool isLocationGranted = await Permission.location.isGranted;
@@ -119,7 +117,6 @@ class ArSensorManager {
   }
 
   void dispose() {
-    _arSensorController.close();
     _accelerationStream?.cancel();
     _userAccelerationStream?.cancel();
     _positionSubscription?.cancel();
@@ -127,7 +124,7 @@ class ArSensorManager {
     _headingStream?.cancel();
   }
 
-  double _filterExponential(List<double> numbers, double alpha) {
+  double _filterExponantial(List<double> numbers, double alpha) {
     final coef = 1 - alpha;
     final temps = numbers.reversed.toList();
     double sum = 0.0;

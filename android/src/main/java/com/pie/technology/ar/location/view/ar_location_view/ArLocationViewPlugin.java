@@ -26,6 +26,9 @@ import io.flutter.plugin.common.EventChannel.StreamHandler;
 public class ArLocationViewPlugin implements FlutterPlugin, StreamHandler {
     private static final String TAG = "ArLocationView";
 
+
+    private static final int SENSOR_DELAY_MICROS = 500;
+
     private static final float ALPHA = 0.45f;
 
 
@@ -54,7 +57,7 @@ public class ArLocationViewPlugin implements FlutterPlugin, StreamHandler {
     private float[] magneticValues = new float[3];
 
     public ArLocationViewPlugin() {
-
+        // no-op
     }
 
     private ArLocationViewPlugin(Context context) {
@@ -88,11 +91,11 @@ public class ArLocationViewPlugin implements FlutterPlugin, StreamHandler {
 
         if (isCompassSensorAvailable()) {
             // Does nothing if the sensors already registered.
-            sensorManager.registerListener(sensorEventListener, compassSensor, SensorManager.SENSOR_DELAY_GAME);
+            sensorManager.registerListener(sensorEventListener, compassSensor, SENSOR_DELAY_MICROS);
         }
 
-        sensorManager.registerListener(sensorEventListener, gravitySensor, SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(sensorEventListener, magneticFieldSensor, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(sensorEventListener, gravitySensor, SENSOR_DELAY_MICROS);
+        sensorManager.registerListener(sensorEventListener, magneticFieldSensor, SENSOR_DELAY_MICROS);
     }
 
     public void onCancel(Object arguments) {

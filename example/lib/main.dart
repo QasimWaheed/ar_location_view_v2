@@ -1,8 +1,8 @@
+import 'package:ar_location_view_example/annotation_view.dart';
+import 'package:ar_location_view_example/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:ar_location_view/ar_location_view.dart';
 import 'package:geolocator/geolocator.dart';
-import 'annotations.dart';
-import 'annotation_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,17 +25,12 @@ class _MyAppState extends State<MyApp> {
         body: ArLocationWidget(
           annotations: annotations,
           showDebugInfoSensor: false,
-          annotationWidth: 180,
-          annotationHeight: 60,
-          radarPosition: RadarPosition.bottomCenter,
           annotationViewBuilder: (context, annotation) {
             return AnnotationView(
               key: ValueKey(annotation.uid),
               annotation: annotation as Annotation,
             );
           },
-          radarWidth: 160,
-          scaleWithDistance: false,
           onLocationChange: (Position position) {
             Future.delayed(const Duration(seconds: 5), () {
               annotations =

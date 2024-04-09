@@ -1,17 +1,17 @@
 name: ar_location_view
 description: ArLocationView is designed to used in areas with large concentration of static POIs
-version: 2.0.9
-publish_to: none
+version: 1.0.4
+homepage: 'https://github.com/Melo567/ar_location_view.git'
 
 environment:
-  sdk: '>=3.3.1 <4.0.0'
+  sdk: '>=2.18.2 <3.0.0'
   flutter: ">=2.5.0"
 
 dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.1.8
-  sensors_plus: ^5.0.0
+  sensors_plus: ^5.0.1
   camera: ^0.10.5+9
   permission_handler: ^11.3.1
   vector_math: ^2.1.4

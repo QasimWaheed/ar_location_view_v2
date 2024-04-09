@@ -4,9 +4,9 @@ import 'annotations.dart';
 
 class AnnotationView extends StatelessWidget {
   const AnnotationView({
-    super.key,
+    Key? key,
     required this.annotation,
-  });
+  }) : super(key: key);
 
   final Annotation annotation;
 
@@ -15,7 +15,7 @@ class AnnotationView extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
-        color: Colors.black.withAlpha(80),
+        color: Colors.white,
       ),
       child: Row(
         children: [

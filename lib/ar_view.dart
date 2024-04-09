@@ -14,7 +14,7 @@ typedef ChangeLocationCallback = void Function(Position position);
 
 class ArView extends StatefulWidget {
   const ArView({
-    super.key,
+    Key? key,
     required this.annotations,
     required this.annotationViewBuilder,
     required this.frame,
@@ -26,13 +26,7 @@ class ArView extends StatefulWidget {
     this.paddingOverlap = 5,
     this.yOffsetOverlap,
     required this.minDistanceReload,
-    this.scaleWithDistance = true,
-    this.markerColor,
-    this.backgroundRadar,
-    this.radarPosition,
-    this.showRadar = true,
-    this.radarWidth,
-  });
+  }) : super(key: key);
 
   final List<ArAnnotation> annotations;
   final AnnotationViewBuilder annotationViewBuilder;
@@ -50,26 +44,6 @@ class ArView extends StatefulWidget {
   final double paddingOverlap;
   final double? yOffsetOverlap;
   final double minDistanceReload;
-
-  ///Scale annotation view with distance from user
-  final bool scaleWithDistance;
-
-  ///Radar
-
-  /// marker color in radar
-  final Color? markerColor;
-
-  ///background radar color
-  final Color? backgroundRadar;
-
-  ///radar position in view
-  final RadarPosition? radarPosition;
-
-  ///Show radar in view
-  final bool showRadar;
-
-  ///Radar width
-  final double? radarWidth;
 
   @override
   State<ArView> createState() => _ArViewState();
@@ -116,41 +90,25 @@ class _ArViewState extends State<ArView> {
                 if (kDebugMode && widget.showDebugInfoSensor)
                   Positioned(
                     bottom: 0,
-                    child: _debugInfo(context, arSensor),
+                    child: debugInfo(context, arSensor),
                   ),
                 Stack(
-                  children: annotations.map(
-                    (e) {
-                      return Positioned(
-                        left: e.arPosition.dx,
-                        top: e.arPosition.dy + height * 0.5,
-                        child: Transform.translate(
-                          offset: Offset(0, e.arPositionOffset.dy),
-                          child: Transform.scale(
-                            scale: widget.scaleWithDistance
-                                ? 1 -
-                                    (e.distanceFromUser /
-                                        (widget.maxVisibleDistance + 280))
-                                : 1,
-                            child: SizedBox(
-                              width: widget.annotationWidth,
-                              height: widget.annotationHeight,
-                              child: widget.annotationViewBuilder(context, e),
-                            ),
-                          ),
+                    children: annotations.map(
+                  (e) {
+                    return Positioned(
+                      left: e.arPosition.dx,
+                      top: e.arPosition.dy + height * 0.5,
+                      child: Transform.translate(
+                        offset: Offset(0, e.arPositionOffset.dy),
+                        child: SizedBox(
+                          width: widget.annotationWidth,
+                          height: widget.annotationHeight,
+                          child: widget.annotationViewBuilder(context, e),
                         ),
-                      );
-                    },
-                  ).toList(),
-                ),
-                if (widget.showRadar)
-                  _radarPosition(
-                      context,
-                      widget.radarPosition ?? RadarPosition.topLeft,
-                      arSensor.heading,
-                      widget.radarWidth != null
-                          ? (widget.radarWidth! * 2)
-                          : width)
+                      ),
+                    );
+                  },
+                ).toList()),
               ],
             );
           }
@@ -160,59 +118,7 @@ class _ArViewState extends State<ArView> {
     );
   }
 
-  Widget _radarPosition(BuildContext context, RadarPosition position,
-      double heading, double width) {
-    final radar = Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: CustomPaint(
-        size: Size(width / 2, width / 2),
-        painter: RadarPainter(
-          maxDistance: widget.maxVisibleDistance,
-          arAnnotations: widget.annotations,
-          heading: heading,
-          background: widget.backgroundRadar ?? Colors.grey,
-          markerColor: widget.markerColor ?? Colors.red,
-        ),
-      ),
-    );
-    final screenWidth = MediaQuery.of(context).size.width;
-    switch (position) {
-      case RadarPosition.topCenter:
-        return Positioned(
-          top: 0,
-          left: screenWidth / 2 - width / 4,
-          child: radar,
-        );
-      case RadarPosition.topRight:
-        return Positioned(
-          top: 0,
-          right: 0,
-          child: radar,
-        );
-      case RadarPosition.bottomLeft:
-        return Positioned(
-          bottom: 0,
-          left: 0,
-          child: radar,
-        );
-      case RadarPosition.bottomCenter:
-        return Positioned(
-          bottom: 0,
-          left: screenWidth / 2 - width / 4,
-          child: radar,
-        );
-      case RadarPosition.bottomRight:
-        return Positioned(
-          bottom: 0,
-          right: 0,
-          child: radar,
-        );
-      default:
-        return radar;
-    }
-  }
-
-  Widget _debugInfo(BuildContext context, ArSensor? arSensor) {
+  Widget debugInfo(BuildContext context, ArSensor? arSensor) {
     return Container(
       color: Colors.white,
       width: MediaQuery.of(context).size.width,
